@@ -47,7 +47,7 @@ app.post("/crear-suscripcion", async (req, res) => {
   }
 });
 
-app.use("/", webhookRouter(preapproval));
+app.use("/", webhookRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
