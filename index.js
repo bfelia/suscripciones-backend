@@ -1,7 +1,9 @@
 import express from "express";
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import dotenv from "dotenv";
+import webhookRouter from "./webhook.js"
 dotenv.config();
+
 const PORT = process.env.PORT || 3000
 
 const app = express();
@@ -16,10 +18,10 @@ const preaproval = new PreApproval(config);
 app.post("/crear-suscripcion", async (req, res) => {
   try {
       
-      const { userId, nombrePlan, monto } = req.body;
+      const { userId, barberiaId, planId, cortesPlan, monto, userEmail, nombreUsuario } = req.body;
       
       const body = {
-          reason: nombrePlan,
+          reason: `${planId}_${cortesPlan}-user_${userId}_${nombreUsuario}-barberia_${barberiaId}`,
           auto_recurring: {
               frequency: 1,
               frequency_type: "months",
@@ -28,7 +30,7 @@ app.post("/crear-suscripcion", async (req, res) => {
               start_date: new Date().toISOString(),
               end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
             },
-      back_url: "https://www.google.com", // Cambiar
+      back_url: "https://beardhook.onrender.com", // Cambiar
       payer_email: "test_user_491019957@testuser.com", // Esto se reemplaza luego por el email real 
     };
     
@@ -36,13 +38,14 @@ app.post("/crear-suscripcion", async (req, res) => {
     const newSuscriber = await preaproval.create({ body });
 
     console.log("✅ Suscripción creada:", newSuscriber);
-    res.status(200).json(newSuscriber);
-    res.json({init_point: preaproval.init_point})
+    res.status(200).json({ init_point: newSuscriber.init_point });
   } catch (error) {
     console.error("❌ Error creando suscripción:", error);
     res.status(500).json({ error: error.message });
   }
 });
+
+app.use("/", webhookRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
