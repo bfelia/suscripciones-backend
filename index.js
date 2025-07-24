@@ -1,13 +1,14 @@
 import express from "express";
+const app = express();
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import dotenv from "dotenv";
 import webhookRouter from "./webhook.js"
 dotenv.config();
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
 
 const PORT = process.env.PORT || 3000
 
-const app = express();
-app.use(express.json());
 
 const config = new MercadoPagoConfig({
   accessToken: process.env.ACCESS_TOKEN, // o tu token directo
