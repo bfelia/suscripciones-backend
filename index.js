@@ -33,6 +33,7 @@ app.post("/crear-suscripcion", async (req, res) => {
             },
       back_url: "https://beardhook.onrender.com", // Cambiar
       payer_email: "test_user_491019957@testuser.com", // Esto se reemplaza luego por el email real 
+      external_reference: barberiaId,
     };
     
     console.log("req.body recibido:", req.body);

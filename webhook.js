@@ -7,7 +7,7 @@ import { FieldValue } from 'firebase-admin/firestore';
 
 // Función para actualizar Firestore
 const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
-	console.log('🔎 preapproval recibido:', JSON.stringify(preapproval, null, 2));
+	console.log('🔎 preapproval recibido:', JSON.stringify(preapprovalData, null, 2));
 	const parsearReason = (reason) => {
 		const partes = reason.split('-');
 		const planId = partes[0].split('_')[0]
