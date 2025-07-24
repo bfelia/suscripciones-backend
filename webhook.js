@@ -18,7 +18,7 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 		return { planId, cortesPlan, userId, nombreUsuario, barberiaId };
 	}
 	const { planId, cortesPlan, userId, nombreUsuario, barberiaId } = parsearReason(preapprovalData.reason);
-
+	console.log(planId, cortesPlan, userId, nombreUsuario, barberiaId)
 
 	const hoy = new Date();
 	const unMesDespues = new Date();
