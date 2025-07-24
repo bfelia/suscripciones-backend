@@ -2,6 +2,7 @@ import express from "express";
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import dotenv from "dotenv";
 dotenv.config();
+const PORT = process.env.PORT || 3000
 
 const app = express();
 app.use(express.json());
@@ -43,7 +44,6 @@ app.post("/crear-suscripcion", async (req, res) => {
   }
 });
 
-const PORT = 3000;
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
 });
