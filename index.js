@@ -18,24 +18,25 @@ const preapproval = new PreApproval(config);
 
 app.post("/crear-suscripcion", async (req, res) => {
   try {
-      
-      const { userId, barberiaId, planId, cortesPlan, monto, userEmail, nombreUsuario } = req.body;
-      
-      const body = {
-          reason: `${planId}_${cortesPlan}-user_${userId}_${nombreUsuario}-barberia_${barberiaId}`,
-          auto_recurring: {
-              frequency: 1,
-              frequency_type: "months",
-              transaction_amount: Number(monto),
-              currency_id: "ARS",
-              start_date: new Date().toISOString(),
-              end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
-            },
-      back_url: "https://beardhook.onrender.com", // Cambiar
+
+    const { userId, barberiaId, planId, cortesPlan, monto, userEmail, nombreUsuario } = req.body;
+
+    const body = {
+      reason: `${planId}_${cortesPlan}-user_${userId}_${nombreUsuario}-barberia_${barberiaId}`,
+      auto_recurring: {
+        frequency: 1,
+        frequency_type: "months",
+        transaction_amount: Number(monto),
+        currency_id: "ARS",
+        start_date: new Date().toISOString(),
+        end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
+      },
+      back_url: "https://beardhook.onrender.com",
+      notification_url: "https://beardhook.onrender.com/webhook",
       payer_email: "test_user_491019957@testuser.com", // Esto se reemplaza luego por el email real 
       external_reference: barberiaId,
     };
-    
+
     console.log("req.body recibido:", req.body);
     const newSuscriber = await preapproval.create({ body });
 
@@ -47,11 +48,7 @@ app.post("/crear-suscripcion", async (req, res) => {
   }
 });
 
-try {
-  app.use("/webhook", webhookRouter);
-} catch(error) {
-  console.error("error conectando a webhook", error)
-} 
+app.use("/", webhookRouter());
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);
