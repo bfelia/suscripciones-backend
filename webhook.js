@@ -3,6 +3,7 @@ const router = express.Router();
 import { admin, db } from './firebase.js';
 import { FieldValue } from 'firebase-admin/firestore';
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
+import axios from 'axios';
 const config = new MercadoPagoConfig({
 	accessToken: process.env.ACCESS_TOKEN, // o tu token directo
 });
