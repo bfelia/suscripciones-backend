@@ -60,7 +60,7 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 
 
 // Webhook
-router.post('/webhook', async (req, res) => {
+router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	console.log('Query:', req.query);
 	console.log('Body:', req.body);
 	console.log('✅ Webhook FUNCIONA');

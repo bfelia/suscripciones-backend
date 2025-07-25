@@ -48,8 +48,6 @@ app.post("/crear-suscripcion", async (req, res) => {
   }
 });
 
-app.use('/webhook', express.text({ type: '*/*' }));
-
 app.use("/webhook", webhookRouter);
 
 app.listen(PORT, () => {
