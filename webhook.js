@@ -26,7 +26,7 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 
 	const fechaInicio = hoy.toISOString();
 	const fechaFin = unMesDespues.toISOString();
-	
+
 
 	try {
 		// Actualizar barbería
@@ -61,9 +61,9 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 
 // Webhook
 router.post('/webhook', async (req, res) => {
-  console.log('✅ Webhook FUNCIONA');
-  console.log('Query:', req.query);
-  console.log('Body:', req.body);
+	console.log('Query:', req.query);
+	console.log('Body:', req.body);
+	console.log('✅ Webhook FUNCIONA');
 	console.log('🔔 Webhook recibida:', req.body);
 
 	// Responder a Mercado Pago que recibiste el webhook (muy importante)
