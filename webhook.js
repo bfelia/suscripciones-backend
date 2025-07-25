@@ -1,8 +1,13 @@
 import express from 'express';
-import axios from 'axios';
 const router = express.Router();
 import { admin, db } from './firebase.js';
 import { FieldValue } from 'firebase-admin/firestore';
+import { MercadoPagoConfig, PreApproval } from "mercadopago";
+const config = new MercadoPagoConfig({
+	accessToken: process.env.ACCESS_TOKEN, // o tu token directo
+});
+
+const preapproval = new PreApproval(config);
 
 
 // Función para actualizar Firestore
@@ -66,33 +71,26 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	console.log('✅ Webhook FUNCIONA');
 	console.log('🔔 Webhook recibida:', req.body);
 
-	// Responder a Mercado Pago que recibiste el webhook (muy importante)
-	res.status(200).send('OK');
+	const { action, type, data } = req.body;
 
-	const { id, topic } = req.query;
 
-	if (!id || !topic) {
-		console.warn("⚠️ Webhook inválido, falta 'id' o 'topic'");
-		return;
-	}
+	if (type === "subscription_preapproval" && action === "updated") {
+		const preapprovalId = data.id;
 
-	if (topic === 'preapproval') {
 		try {
-			const { data: preapproval } = await axios.get(
-				`https://api.mercadopago.com/preapproval/${id}`,
-				{
-					headers: {
-						Authorization: `Bearer ${process.env.ACCESS_TOKEN}`
-					}
-				}
-			);
+			const subscription = await preapproval.get(preapprovalId);
+			console.log("✅ Info de la suscripción:", subscription.body);
 
 			await guardarSuscripcion(preapproval);
 
 			await actualizarFirestoreTrasSuscripcion(preapproval)
+			res.sendStatus(200);
 		} catch (err) {
-			console.error('❌ Error al obtener preapproval:', err);
+			console.error("❌ Error al obtener suscripción:", err);
+			res.sendStatus(500);
 		}
+	} else {
+		res.sendStatus(200); // Ignorar otros tipos por ahora
 	}
 
 });
