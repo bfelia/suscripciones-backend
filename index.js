@@ -2,7 +2,7 @@ import express from "express";
 const app = express();
 import { MercadoPagoConfig, PreApproval } from "mercadopago";
 import dotenv from "dotenv";
-import webhookRouter from "./webhook.js";
+// import webhookRouter from "./webhook.js";
 dotenv.config();
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
@@ -48,7 +48,7 @@ app.post("/crear-suscripcion", async (req, res) => {
   }
 });
 
-app.use("/webhook", webhookRouter);
+// app.use("/webhook", webhookRouter);
 
 app.listen(PORT, () => {
   console.log(`Servidor escuchando en http://localhost:${PORT}`);

@@ -10,6 +10,56 @@ const config = new MercadoPagoConfig({
 const preapproval = new PreApproval(config);
 
 
+
+// Webhook
+router.post('/', express.text({ type: "*/*" }), async (req, res) => {
+	console.log('✅ Webhook FUNCIONA');
+	console.log('Query:', req.query);
+	console.log('Body:', req.body);
+	console.log("📩 Webhook recibido:", JSON.stringify(req.body, null, 2));
+
+	const { action, type, data } = req.body;
+
+	if (data.id === "test_preapproval_id") {
+		console.log("🧪 Webhook de prueba ignorado.");
+		return res.sendStatus(200);
+	}
+
+	if (type === "subscription_preapproval" && action === "updated") {
+
+		try {
+			const response = await axios.get("https://api.mercadopago.com/preapproval/search", {
+				headers: {
+					Authorization: `Bearer ${accessToken}`,
+				},
+				params: {
+					id: data.id
+				}
+			});
+			const subs = response.data.results?.[0];
+			if (!subs) {
+				console.log("❌ No se encontró la suscripción");
+				return res.sendStatus(404);
+			}
+
+			console.log("✅ Suscripción encontrada:", subs);
+
+			await guardarSuscripcion(subs);
+
+			await actualizarFirestoreTrasSuscripcion(subs)
+			res.sendStatus(200);
+		} catch (err) {
+			console.error("❌ Error al obtener suscripción:", err);
+			res.sendStatus(500);
+		}
+	} else {
+		console.error("se envio otro tipo de solicitud")
+		res.sendStatus(200); // Ignorar otros tipos por ahora
+	}
+
+});
+
+
 // Función para actualizar Firestore
 const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 	console.log('🔎 preapproval recibido:', JSON.stringify(preapprovalData, null, 2));
@@ -63,37 +113,6 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 	}
 };
 
-
-// Webhook
-router.post('/', express.text({ type: "*/*" }), async (req, res) => {
-	console.log('Query:', req.query);
-	console.log('Body:', req.body);
-	console.log('✅ Webhook FUNCIONA');
-	console.log('🔔 Webhook recibida:', req.body);
-
-	const { action, type, data } = req.body;
-
-
-	if (type === "subscription_preapproval" && action === "updated") {
-		const preapprovalId = data.id;
-
-		try {
-			const subscription = await preapproval.get(preapprovalId);
-			console.log("✅ Info de la suscripción:", subscription.body);
-
-			await guardarSuscripcion(preapproval);
-
-			await actualizarFirestoreTrasSuscripcion(preapproval)
-			res.sendStatus(200);
-		} catch (err) {
-			console.error("❌ Error al obtener suscripción:", err);
-			res.sendStatus(500);
-		}
-	} else {
-		res.sendStatus(200); // Ignorar otros tipos por ahora
-	}
-
-});
 
 
 // Esta función la usás dentro de tu webhook cuando se aprueba una suscripción
