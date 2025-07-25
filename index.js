@@ -32,7 +32,7 @@ app.post("/crear-suscripcion", async (req, res) => {
         end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
       },
       back_url: "https://beardhook.onrender.com",
-      notification_url: "https://beardhook.onrender.com/webhook",
+      notification_url: "https://webhook.site/42723a6c-2c6d-45b7-9494-2a4df50298f7",
       payer_email: "test_user_491019957@testuser.com", // Esto se reemplaza luego por el email real 
       external_reference: barberiaId,
     };
