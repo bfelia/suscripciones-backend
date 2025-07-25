@@ -48,7 +48,7 @@ app.post("/crear-suscripcion", async (req, res) => {
 });
 
 try {
-  app.use("/", webhookRouter);
+  app.use("/webhook", webhookRouter);
 } catch(error) {
   console.error("error conectando a webhook", error)
 } 
