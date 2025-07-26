@@ -30,7 +30,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 
 	// 🧩 NUEVO BLOQUE: manejo de pagos autorizados
 	if (type === "subscription_authorized_payment" && action === "created") {
-		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
+		console.log("🔔 Webhook recibido: subscription_authorized_payment", dataid);
 		try {
 			// console.log("🔄 Buscando pagos hechos con esta suscripción...");
 			// // Consultar la suscripción en base al preapproval_id
