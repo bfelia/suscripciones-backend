@@ -42,6 +42,10 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 				console.log("❌ No se encontró la suscripción");
 				return res.sendStatus(404);
 			}
+			if (subs.status !== "authorized") {
+				console.log(`ℹ️ Suscripción con estado '${subs.status}', no se procesa aún.`);
+				return res.sendStatus(200);
+			}
 
 			console.log("✅ Suscripción encontrada:", subs);
 
@@ -73,7 +77,7 @@ async function guardarSuscripcion(preapprovalData) {
 		}
 
 		const { planId, userId, barberiaId } = parsearReason(preapprovalData.reason);
-		
+
 		await admin.firestore().collection('suscripciones_activas').doc(userId).set({
 			preapproval_id: preapprovalData.id,
 			status: preapprovalData.status,

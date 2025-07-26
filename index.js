@@ -31,8 +31,8 @@ app.post("/crear-suscripcion", async (req, res) => {
 
     if (doc.exists) {
       const data = doc.data();
-      if (data.barberiaId === barberiaId && data.status === 'pending') {
-        return res.status(400).json({ error: 'Ya tenés una suscripción activa con esta barbería.' });
+      if (data.barberiaId === barberiaId && (status === 'pending' || status === 'authorized')) {
+        return res.status(400).json({ error: 'Ya tenés una suscripción pendiente o activa con esta barbería.' });
       }
     }
 
