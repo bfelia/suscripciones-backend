@@ -80,7 +80,8 @@ async function guardarSuscripcion(preapprovalData) {
 			ultima_aprobacion: preapprovalData.date_last_payment || preapprovalData.date_created,
 			...(preapprovalData.payer_email ? { payer_email: preapprovalData.payer_email } : {}),
 			planId,
-			barberiaId
+			barberiaId,
+			userId,
 		});
 
 		console.log(`✅ Suscripción guardada para el usuario ${userId}`);

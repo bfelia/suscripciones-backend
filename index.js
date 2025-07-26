@@ -19,8 +19,8 @@ const preapproval = new PreApproval(config);
 
 const tieneSuscripcionActiva = async (userId, barberiaId) => {
   try {
-    const suscripcionesRef = db.collection('suscripciones_activas').doc(userId);
-    const snapshot = await suscripcionesRef
+    const snapshot = await db.collection('suscripciones_activas')
+      .where('userId', '==', userId)
       .where('barberiaId', '==', barberiaId)
       .where('status', '==', 'authorized')
       .get();
