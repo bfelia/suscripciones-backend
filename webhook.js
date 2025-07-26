@@ -8,7 +8,7 @@ const config = new MercadoPagoConfig({
 	accessToken: process.env.ACCESS_TOKEN, // o tu token directo
 });
 
-const preapproval = new PreApproval(config);
+const accessToken = process.env.ACCESS_TOKEN
 
 
 
