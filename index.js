@@ -17,33 +17,26 @@ const config = new MercadoPagoConfig({
 
 const preapproval = new PreApproval(config);
 
-const tieneSuscripcionActiva = async (userId, barberiaId) => {
-  try {
-    const snapshot = await db.collection('suscripciones_activas')
-      .where('userId', '==', userId)
-      .where('barberiaId', '==', barberiaId)
-      .where('status', '==', 'authorized')
-      .get();
-
-    return !snapshot.empty; // true si hay una activa
-  } catch (error) {
-    console.error('Error al verificar suscripción activa:', error);
-    return false;
-  }
-};
-
 
 app.post("/crear-suscripcion", async (req, res) => {
   try {
-
     const { userId, barberiaId, planId, cortesPlan, monto, userEmail, nombreUsuario } = req.body;
 
-    const yaSuscripto = await tieneSuscripcionActiva(userId);
-
-    if (yaSuscripto) {
-      return res.status(400).json({ error: 'El usuario ya tiene una suscripción activa.' });
+    if (!userId || !barberiaId || !planId || !cortesPlan || !monto || !userEmail || !nombreUsuario) {
+      return res.status(400).json({ error: 'Faltan datos necesarios para crear la suscripción.' });
     }
 
+    // 1. Verificar si ya tiene una suscripción activa
+    const doc = await db.collection('suscripciones_activas').doc(userId).get();
+
+    if (doc.exists) {
+      const data = doc.data();
+      if (data.barberiaId === barberiaId && data.status === 'authorized') {
+        return res.status(400).json({ error: 'Ya tenés una suscripción activa con esta barbería.' });
+      }
+    }
+
+    // 2. Crear el cuerpo de la suscripción
     const body = {
       reason: `${planId}_${cortesPlan}-user_${userId}_${nombreUsuario}-barberia_${barberiaId}`,
       auto_recurring: {
@@ -60,10 +53,7 @@ app.post("/crear-suscripcion", async (req, res) => {
       external_reference: barberiaId,
     };
 
-    if (!userId || !barberiaId || !planId || !cortesPlan || !monto || !userEmail || !nombreUsuario) {
-      return res.status(400).json({ error: 'Faltan datos necesarios para crear la suscripción.' });
-    }
-
+    // 3. Crear suscripción en MP
     console.log("req.body recibido:", req.body);
     const newSuscriber = await preapproval.create({ body });
 
