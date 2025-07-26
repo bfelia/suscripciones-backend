@@ -51,7 +51,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 					Authorization: `Bearer ${accessToken}`,
 				},
 				params: {
-					id: preapproval_id
+					id: data.id
 				}
 			});
 			const subs = subsResp.data.results?.[0];
@@ -112,7 +112,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	}
 
 	// Ignorar cualquier otro evento
-	console.error("🚫 Tipo de evento no manejado:", type, action);
+	console.error("🚫 Tipo de evento no manejado:", type);
 	res.sendStatus(200);
 
 });
