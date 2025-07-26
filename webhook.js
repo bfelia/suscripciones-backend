@@ -47,7 +47,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 
 			await guardarSuscripcion(subs);
 			await actualizarFirestoreTrasSuscripcion(subs)
-			
+
 			res.sendStatus(200);
 		} catch (err) {
 			console.error("❌ Error al obtener suscripción:", err);
@@ -78,7 +78,7 @@ async function guardarSuscripcion(preapprovalData) {
 			preapproval_id: preapprovalData.id,
 			status: preapprovalData.status,
 			ultima_aprobacion: preapprovalData.date_last_payment || preapprovalData.date_created,
-			payer_email: preapprovalData.payer_email,
+			...(preapprovalData.payer_email ? { payer_email: preapprovalData.payer_email } : {}),
 			planId,
 			barberiaId
 		});
