@@ -28,6 +28,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 
 	// 🧩 NUEVO BLOQUE: manejo de pagos autorizados
 	if (type === "subscription_authorized_payment" && action === "created") {
+		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
 			// Hacer GET al recurso de payment para obtener la preapproval_id
 			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${data.id}`, {
