@@ -29,54 +29,55 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	// 🧩 NUEVO BLOQUE: manejo de pagos autorizados
 	if (type === "subscription_authorized_payment" && action === "created") {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
-		try {
-			// Hacer GET al recurso de payment para obtener la preapproval_id
-			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${data.id}`, {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				}
-			});
-			const paymentData = paymentResp.data;
-			const preapproval_id = paymentData.preapproval_id;
+		// try {
+		// 	// Hacer GET al recurso de payment para obtener la preapproval_id
+		// 	const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${data.id}`, {
+		// 		headers: {
+		// 			Authorization: `Bearer ${accessToken}`,
+		// 		}
+		// 	});
+		// 	const paymentData = paymentResp.data;
+		// 	const preapproval_id = paymentData.preapproval_id;
 
-			if (!preapproval_id) {
-				console.log("❌ No se encontró el preapproval_id en el payment.");
-				return res.sendStatus(400);
-			}
+		// 	if (!preapproval_id) {
+		// 		console.log("❌ No se encontró el preapproval_id en el payment.");
+		// 		return res.sendStatus(400);
+		// 	}
 
-			console.log("🔄 Obteniendo suscripción asociada al pago...");
+		// 	console.log("🔄 Obteniendo suscripción asociada al pago...");
 
-			// Consultar la suscripción en base al preapproval_id
-			const subsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-				params: {
-					id: data.id
-				}
-			});
-			const subs = subsResp.data.results?.[0];
-			if (!subs) {
-				console.log("❌ No se encontró la suscripción");
-				return res.sendStatus(404);
-			}
+		// 	// Consultar la suscripción en base al preapproval_id
+		// 	const subsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
+		// 		headers: {
+		// 			Authorization: `Bearer ${accessToken}`,
+		// 		},
+		// 		params: {
+		// 			id: data.id
+		// 		}
+		// 	});
+		// 	const subs = subsResp.data.results?.[0];
+		// 	if (!subs) {
+		// 		console.log("❌ No se encontró la suscripción");
+		// 		return res.sendStatus(404);
+		// 	}
 
-			if (subs.status !== "authorized") {
-				console.log(`ℹ️ Suscripción aún no está autorizada (${subs.status})`);
-				return res.sendStatus(200);
-			}
+		// 	if (subs.status !== "authorized") {
+		// 		console.log(`ℹ️ Suscripción aún no está autorizada (${subs.status})`);
+		// 		return res.sendStatus(200);
+		// 	}
 
-			console.log("✅ Suscripción AUTORIZADA detectada desde el pago:", subs);
+		// 	console.log("✅ Suscripción AUTORIZADA detectada desde el pago:", subs);
 
-			await guardarSuscripcion(subs);
-			await actualizarFirestoreTrasSuscripcion(subs)
+		// 	await guardarSuscripcion(subs);
+		// 	await actualizarFirestoreTrasSuscripcion(subs)
 
 			return res.sendStatus(200);
 
-		} catch (err) {
-			console.error("❌ Error al manejar authorized_payment:", err);
-			return res.sendStatus(500);
-		}
+		// } catch (err) {
+		// 	console.error("❌ Error al manejar authorized_payment:", err);
+		// 	return res.sendStatus(500);
+		// }
+
 	}
 
 	// 🧩 BLOQUE EXISTENTE: subscription actualizada directamente
