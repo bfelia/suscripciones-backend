@@ -30,6 +30,7 @@ app.post("/crear-suscripcion", async (req, res) => {
         currency_id: "ARS",
         start_date: new Date().toISOString(),
         end_date: new Date(new Date().setFullYear(new Date().getFullYear() + 2)).toISOString(),
+        payer_email: userEmail,
       },
       back_url: "https://beardhook.onrender.com",
       notification_url: "https://beardhook.onrender.com/webhook",

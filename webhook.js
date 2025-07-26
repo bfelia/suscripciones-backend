@@ -46,8 +46,8 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 			console.log("✅ Suscripción encontrada:", subs);
 
 			await guardarSuscripcion(subs);
-
 			await actualizarFirestoreTrasSuscripcion(subs)
+			
 			res.sendStatus(200);
 		} catch (err) {
 			console.error("❌ Error al obtener suscripción:", err);
@@ -59,6 +59,35 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	}
 
 });
+
+
+// Esta función la usás dentro de tu webhook cuando se aprueba una suscripción
+async function guardarSuscripcion(preapprovalData) {
+	try {
+		const parsearReason = (reason) => {
+			const partes = reason.split('-');
+			const planId = partes[0].split('_')[0]
+			const userId = partes[1].split('_')[1]
+			const barberiaId = partes[2].split('_')[1]
+			return { planId, userId, barberiaId };
+		}
+
+		const { planId, userId, barberiaId } = parsearReason(preapprovalData.reason);
+		
+		await admin.firestore().collection('suscripciones_activas').doc(userId).set({
+			preapproval_id: preapprovalData.id,
+			status: preapprovalData.status,
+			ultima_aprobacion: preapprovalData.date_last_payment || preapprovalData.date_created,
+			payer_email: preapprovalData.payer_email,
+			planId,
+			barberiaId
+		});
+
+		console.log(`✅ Suscripción guardada para el usuario ${userId}`);
+	} catch (err) {
+		console.error('❌ Error al guardar suscripción en Firestore:', err);
+	}
+}
 
 
 // Función para actualizar Firestore
@@ -114,34 +143,5 @@ const actualizarFirestoreTrasSuscripcion = async (preapprovalData) => {
 	}
 };
 
-
-
-// Esta función la usás dentro de tu webhook cuando se aprueba una suscripción
-async function guardarSuscripcion(preapprovalData) {
-	try {
-		const parsearReason = (reason) => {
-			const partes = reason.split('-');
-			const planId = partes[0].split('_')[0]
-			const userId = partes[1].split('_')[1]
-			const barberiaId = partes[2].split('_')[1]
-			return { planId, userId, barberiaId };
-		}
-
-		const { planId, userId, barberiaId } = parsearReason(preapprovalData.reason);
-
-		await admin.firestore().collection('suscripciones_activas').doc(userId).set({
-			preapproval_id: preapprovalData.id,
-			status: preapprovalData.status,
-			ultima_aprobacion: preapprovalData.date_last_payment || preapprovalData.date_created,
-			payer_email: preapprovalData.payer_email,
-			planId,
-			barberiaId
-		});
-
-		console.log(`✅ Suscripción guardada para el usuario ${userId}`);
-	} catch (err) {
-		console.error('❌ Error al guardar suscripción en Firestore:', err);
-	}
-}
 
 export default router;
