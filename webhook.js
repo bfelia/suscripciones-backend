@@ -19,7 +19,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	console.log('Body:', req.body);
 	console.log("📩 Webhook recibido:", JSON.stringify(req.body, null, 2));
 
-	const dataid = req.query.data.id
+	const dataid = req.query['data.id']
 
 	const { action, type, data } = req.body;
 
