@@ -31,7 +31,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
 			// Hacer GET al recurso de payment para obtener la preapproval_id
-			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${id}`, {
+			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${data.id}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				}
