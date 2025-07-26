@@ -112,7 +112,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	}
 
 	// Ignorar cualquier otro evento
-	console.error("🚫 Tipo de evento no manejado:", type);
+	console.error("🚫 Tipo de evento no manejado:", type, action);
 	res.sendStatus(200);
 
 });
