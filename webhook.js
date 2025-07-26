@@ -19,7 +19,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	console.log('Body:', req.body);
 	console.log("📩 Webhook recibido:", JSON.stringify(req.body, null, 2));
 
-	const { action, type, data, id} = req.body;
+	const { action, type, data, id } = req.body;
 
 	if (data.id === "test_preapproval_id") {
 		console.log("🧪 Webhook de prueba ignorado.");
@@ -31,7 +31,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
 			// Hacer GET al recurso de payment para obtener la preapproval_id
-			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${data.id}`, {
+			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				}
@@ -46,16 +46,26 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 
 			console.log("🔄 Obteniendo suscripción asociada al pago...");
 
-			// Consultar la suscripción en base al preapproval_id
-			const subsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
+			// // Consultar la suscripción en base al preapproval_id
+			// const subsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
+			// 	headers: {
+			// 		Authorization: `Bearer ${accessToken}`,
+			// 	},
+			// 	params: {
+			// 		preapproval_id: preapproval_id,
+			// 	}
+			// });
+			// const subs = subsResp.data.results?.[0];
+			
+			//desde
+			const subsResp = await axios.get(`https://api.mercadopago.com/preapproval/${preapproval_id}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				},
-				params: {
-					id: data.id
-				}
 			});
-			const subs = subsResp.data.results?.[0];
+			const subs = subsResp.data;
+			//hasta
+			
 			if (!subs) {
 				console.log("❌ No se encontró la suscripción");
 				return res.sendStatus(404);
