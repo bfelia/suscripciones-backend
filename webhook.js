@@ -30,7 +30,6 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	if (type === "subscription_authorized_payment" && action === "created") {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
-			const preapprovalId = data.id
 			console.log("🔄 Buscando pagos hechos con esta suscripción...");
 			// Consultar la suscripción en base al preapproval_id
 			const paymentsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
@@ -38,7 +37,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 					Authorization: `Bearer ${accessToken}`,
 				},
 				params: {
-					preapproval_id: preapprovalId,
+					payer_id: data.id,
 					sort: "date_created",
 					order: "desc",
 					limit: 1,
@@ -54,7 +53,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 			const payment = payments[0];
 			console.log("✅ Último pago encontrado:", payment);
 
-			if (payment.status !== "authorized") {
+			if (payment.status !== "approved") {
 				console.log(`ℹ️ Pago con estado '${payment.status}', no se procesa.`);
 				return res.sendStatus(200);
 			}
