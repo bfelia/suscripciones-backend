@@ -54,13 +54,13 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 			const payment = payments[0];
 			console.log("✅ Último pago encontrado:", payment);
 
-			if (payment.status !== "approved") {
+			if (payment.status !== "authorized") {
 				console.log(`ℹ️ Pago con estado '${payment.status}', no se procesa.`);
 				return res.sendStatus(200);
 			}
 
 			// Hacer GET al recurso de payment para obtener la preapproval_id
-			const subsResp = await axios.get(`https://api.mercadopago.com/v1/payments/${preapprovalId}`, {
+			const subsResp = await axios.get(`https://api.mercadopago.com/preapproval/${preapprovalId}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				}
