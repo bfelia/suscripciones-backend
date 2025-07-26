@@ -30,6 +30,7 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	if (type === "subscription_authorized_payment" && action === "created") {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
+			const paymentId = data.id
 			// Hacer GET al recurso de payment para obtener la preapproval_id
 			const paymentResp = await axios.get(`https://api.mercadopago.com/v1/payments/${paymentId}`, {
 				headers: {
@@ -87,7 +88,6 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 			console.error("❌ Error al manejar authorized_payment:", err);
 			return res.sendStatus(500);
 		}
-
 	}
 
 	// 🧩 BLOQUE EXISTENTE: subscription actualizada directamente
