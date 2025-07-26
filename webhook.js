@@ -19,7 +19,9 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	console.log('Body:', req.body);
 	console.log("📩 Webhook recibido:", JSON.stringify(req.body, null, 2));
 
-	const { action, type, data, id } = req.body;
+	const dataid = req.query.data.id
+
+	const { action, type, data } = req.body;
 
 	if (data.id === "test_preapproval_id") {
 		console.log("🧪 Webhook de prueba ignorado.");
@@ -30,36 +32,35 @@ router.post('/', express.text({ type: "*/*" }), async (req, res) => {
 	if (type === "subscription_authorized_payment" && action === "created") {
 		console.log("🔔 Webhook recibido: subscription_authorized_payment", data);
 		try {
-			console.log("🔄 Buscando pagos hechos con esta suscripción...");
-			// Consultar la suscripción en base al preapproval_id
-			const paymentsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
-				headers: {
-					Authorization: `Bearer ${accessToken}`,
-				},
-				params: {
-					payer_id: data.id,
-					sort: "date_created",
-					order: "desc",
-					limit: 1,
-				}
-			});
-			const payments = paymentsResp.data.results;
+			// console.log("🔄 Buscando pagos hechos con esta suscripción...");
+			// // Consultar la suscripción en base al preapproval_id
+			// const paymentsResp = await axios.get("https://api.mercadopago.com/preapproval/search", {
+			// 	headers: {
+			// 		Authorization: `Bearer ${accessToken}`,
+			// 	},
+			// 	params: {
+			// 		sort: "date_created",
+			// 		order: "desc",
+			// 		limit: 1,
+			// 	}
+			// });
+			// const payments = paymentsResp.data.results;
 
-			if (!payments || payments.length === 0) {
-				console.log("❌ No se encontraron pagos con esta suscripción");
-				return res.sendStatus(404);
-			}
+			// if (!payments || payments.length === 0) {
+			// 	console.log("❌ No se encontraron pagos con esta suscripción");
+			// 	return res.sendStatus(404);
+			// }
 
-			const payment = payments[0];
-			console.log("✅ Último pago encontrado:", payment);
+			// const payment = payments[0];
+			// console.log("✅ Último pago encontrado:", payment);
 
-			if (payment.status !== "approved") {
-				console.log(`ℹ️ Pago con estado '${payment.status}', no se procesa.`);
-				return res.sendStatus(200);
-			}
+			// if (payment.status !== "approved") {
+			// 	console.log(`ℹ️ Pago con estado '${payment.status}', no se procesa.`);
+			// 	return res.sendStatus(200);
+			// }
 
 			// Hacer GET al recurso de payment para obtener la preapproval_id
-			const subsResp = await axios.get(`https://api.mercadopago.com/preapproval/${preapprovalId}`, {
+			const subsResp = await axios.get(`https://api.mercadopago.com/preapproval/${dataid}`, {
 				headers: {
 					Authorization: `Bearer ${accessToken}`,
 				}
